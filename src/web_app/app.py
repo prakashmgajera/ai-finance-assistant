@@ -28,12 +28,7 @@ llm_type = st.sidebar.selectbox("Type of LLM", ["gemini", "openai"], index=0)
 llm_api_key = st.sidebar.text_input("LLM API Key", type="password")
 
 
-# Vectorize config
-st.sidebar.subheader("Vectorize RAG Configuration")
-vectorize_token = st.sidebar.text_input("Vectorize API Token", type="password")
-if not vectorize_token:
-    st.sidebar.warning("Vectorize API token required for RAG retrieval. Please enter your token.")
-st.session_state["vectorize_token"] = vectorize_token
+
 
 # Qdrant Cloud config
 st.sidebar.subheader("Qdrant Cloud Configuration")
@@ -51,12 +46,14 @@ if not llm_api_key:
     st.sidebar.warning("API key required for LLM access. Please enter your key.")
 
 
-from agents.vectorize_rag_retriever import FinanceQAAgent, VectorizeRAGRetriever
+
+from agents.llamaindex_rag_retriever import LlamaIndexRAGRetriever
 from agents.llm_backend import LLMBackend
 
 # Setup FinanceQAAgent with user-provided model and key
 llm_backend = LLMBackend(provider=llm_type, api_key=llm_api_key)
-rag_retriever = VectorizeRAGRetriever(token=st.session_state.get("vectorize_token", ""))
+rag_retriever = LlamaIndexRAGRetriever()  # Uses persistent Qdrant vector store
+from agents.vectorize_rag_retriever import FinanceQAAgent
 finance_qa_agent = FinanceQAAgent(llm_backend, rag_retriever)
 
 # Main UI Tabs
