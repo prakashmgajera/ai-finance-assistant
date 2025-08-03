@@ -3,6 +3,7 @@ from core.state import FinanceAgentState
 from agents.llm_backend import LLMBackend
 
 class VectorizeRAGRetriever:
+    _memory_cache = {}
     """
     Simple retriever that returns relevant URLs for finance concepts.
     """
@@ -15,6 +16,9 @@ class VectorizeRAGRetriever:
         self.pipelines = v.PipelinesApi(self.api)
 
     def retrieve(self, query: str) -> List[Dict[str, Any]]:
+        # Check memory cache first
+        if query in self._memory_cache:
+            return self._memory_cache[query]
         import vectorize_client as v
         try:
             response = self.pipelines.retrieve_documents(
@@ -25,12 +29,13 @@ class VectorizeRAGRetriever:
                     num_results=5,
                 )
             )
-            # Each document should have 'text' and optionally 'source_url'
             results = []
             for doc in response.documents:
                 content = doc.get('text', '')
                 url = doc.get('source_url', '')
                 results.append({"content": content, "source_url": url})
+            # Save to memory cache
+            self._memory_cache[query] = results
             return results
         except Exception as e:
             return [{"content": f"Error retrieving documents: {e}", "source_url": ""}]
