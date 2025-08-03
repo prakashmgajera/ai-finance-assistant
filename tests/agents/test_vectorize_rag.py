@@ -3,7 +3,7 @@ import os
 import sys
 import pytest
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..', 'src')))
-from agents.concept_explainer import SimpleRAGRetriever
+from agents.vectorize_rag_retriever import VectorizeRAGRetriever
 
 def test_vectorize_rag_retriever_success(monkeypatch):
     # Mock the environment variable for TOKEN
@@ -33,7 +33,7 @@ def test_vectorize_rag_retriever_success(monkeypatch):
         "PipelinesApi": lambda api: DummyPipelinesApi(),
         "RetrieveDocumentsRequest": lambda **kwargs: kwargs
     })
-    retriever = SimpleRAGRetriever()
+    retriever = VectorizeRAGRetriever(token="dummy")
     results = retriever.retrieve("What is investing?")
     assert len(results) == 2
     assert results[0]["content"] == "Sample answer 1"
@@ -59,7 +59,7 @@ def test_vectorize_rag_retriever_error(monkeypatch):
         "PipelinesApi": lambda api: DummyPipelinesApi(),
         "RetrieveDocumentsRequest": lambda **kwargs: kwargs
     })
-    retriever = SimpleRAGRetriever()
+    retriever = VectorizeRAGRetriever(token="dummy")
     results = retriever.retrieve("What is investing?")
     assert len(results) == 1
     assert results[0]["content"].startswith("Error retrieving documents:")

@@ -43,12 +43,12 @@ if not llm_api_key:
     st.sidebar.warning("API key required for LLM access. Please enter your key.")
 
 
-from agents.concept_explainer import FinanceQAAgent, SimpleRAGRetriever
+from agents.vectorize_rag_retriever import FinanceQAAgent, VectorizeRAGRetriever
 from agents.llm_backend import LLMBackend
 
 # Setup FinanceQAAgent with user-provided model and key
 llm_backend = LLMBackend(provider=llm_type, api_key=llm_api_key)
-rag_retriever = SimpleRAGRetriever(token=st.session_state.get("vectorize_token", ""))
+rag_retriever = VectorizeRAGRetriever(token=st.session_state.get("vectorize_token", ""))
 finance_qa_agent = FinanceQAAgent(llm_backend, rag_retriever)
 
 # Main UI Tabs

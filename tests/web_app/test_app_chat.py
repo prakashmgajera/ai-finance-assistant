@@ -2,7 +2,7 @@ import sys, os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../src')))
 import pytest
 import streamlit
-from agents.concept_explainer import FinanceQAAgent, SimpleRAGRetriever
+from agents.vectorize_rag_retriever import FinanceQAAgent, VectorizeRAGRetriever
 from agents.llm_backend import LLMBackend
 
 # Basic integration test for the chat logic
@@ -14,7 +14,7 @@ def test_streamlit_chat_flow():
     session = DummySessionState()
     session["conversational_history"] = []
     llm = LLMBackend(provider="gemini", api_key="test")
-    rag = SimpleRAGRetriever()
+    rag = VectorizeRAGRetriever(token="dummy")
     agent = FinanceQAAgent(llm, rag)
     user_query = "What is a bond?"
     state = {

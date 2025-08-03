@@ -1,9 +1,8 @@
-
 from typing import Any, Dict, List, Optional
 from core.state import FinanceAgentState
 from agents.llm_backend import LLMBackend
 
-class SimpleRAGRetriever:
+class VectorizeRAGRetriever:
     """
     Simple retriever that returns relevant URLs for finance concepts.
     """
@@ -40,7 +39,7 @@ class FinanceQAAgent:
     """
     Answers finance and investment concept questions using LLM and RAG, cites sources.
     """
-    def __init__(self, llm_backend: LLMBackend, rag_retriever: SimpleRAGRetriever):
+    def __init__(self, llm_backend: LLMBackend, rag_retriever: VectorizeRAGRetriever):
         self.llm_backend = llm_backend
         self.rag_retriever = rag_retriever
 
