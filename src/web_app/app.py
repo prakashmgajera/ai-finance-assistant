@@ -23,40 +23,50 @@ tab = st.sidebar.radio("Go to", ["Chat", "Portfolio", "Market", "Goals"])
 st.sidebar.markdown("---")
 
 # LLM config
+
+
+# LLM config (OpenAI is default, selection removed from UI)
 st.sidebar.subheader("LLM Configuration")
-llm_type = st.sidebar.selectbox("Type of LLM", ["gemini", "openai"], index=0)
-llm_api_key = st.sidebar.text_input("LLM API Key", type="password")
+llm_type = "openai"
+llm_api_key = os.getenv("OPENAI_API_KEY")
 
 
 
 
 # Qdrant Cloud config
+
 st.sidebar.subheader("Qdrant Cloud Configuration")
-qdrant_api_key = st.sidebar.text_input("Qdrant API Key", type="password")
+qdrant_api_key = os.getenv("QDRANT_API_KEY")
 st.session_state["qdrant_api_key"] = qdrant_api_key
-if qdrant_api_key:
-    os.environ["QDRANT_API_KEY"] = qdrant_api_key
 
 # Store LLM config in session state
+
 st.session_state["llm_type"] = llm_type
 st.session_state["llm_api_key"] = llm_api_key
 
 # For production, mask API key and warn if missing
 if not llm_api_key:
-    st.sidebar.warning("API key required for LLM access. Please enter your key.")
+    st.sidebar.warning("LLM API key required. Please set it in your system environment variables.")
+if not qdrant_api_key:
+    st.sidebar.warning("Qdrant API key required. Please set it in your system environment variables.")
+
 
 
 
 from agents.llamaindex_rag_retriever import LlamaIndexRAGRetriever
 from agents.llm_backend import LLMBackend
 
-
 # Setup FinanceQAAgent with user-provided model and key
 llm_backend = LLMBackend(provider=llm_type, api_key=llm_api_key)
 qdrant_url = "https://6f1a0c83-2778-4e95-af4e-6b6506891a53.us-west-2-0.aws.cloud.qdrant.io"
-rag_retriever = LlamaIndexRAGRetriever(qdrant_url=qdrant_url, qdrant_api_key=qdrant_api_key)
-from agents.vectorize_rag_retriever import FinanceQAAgent
-finance_qa_agent = FinanceQAAgent(llm_backend, rag_retriever)
+rag_retriever = None
+finance_qa_agent = None
+if qdrant_api_key:
+    rag_retriever = LlamaIndexRAGRetriever(qdrant_url=qdrant_url, qdrant_api_key=qdrant_api_key)
+    from agents.vectorize_rag_retriever import FinanceQAAgent
+    finance_qa_agent = FinanceQAAgent(llm_backend, rag_retriever)
+else:
+    st.sidebar.error("Please enter your Qdrant API key to enable retrieval.")
 
 # Main UI Tabs
 if tab == "Chat":

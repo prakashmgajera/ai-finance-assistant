@@ -25,7 +25,7 @@ class LlamaIndexRAGRetriever:
                 port=6333,
                 collection_name=collection_name
             )
-        self.index = VectorStoreIndex(self.vector_store, embed_model=OpenAIEmbedding())
+        self.index = VectorStoreIndex.from_vector_store(self.vector_store, embed_model=OpenAIEmbedding())
 
     def retrieve(self, query: str, top_k: int = 5) -> List[Dict[str, Any]]:
         # Query the vector store
