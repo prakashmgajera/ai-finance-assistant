@@ -1,0 +1,33 @@
+%% AI Finance Assistant Architecture (Mermaid)
+flowchart TD
+    UI["User Interface (Streamlit Web App)"]
+    Router["Router Agent (LangGraph StateGraph)"]
+    QA["Finance Q&A Agent\n(LLM + RAG)"]
+    Portfolio["Portfolio Analyzer\n(Metrics, Visualization)"]
+    Market["Market Analyzer\n(APIs, Insights)"]
+    Goal["Goal Projection Agent"]
+    State["Agent State Management\n(FinanceAgentState)"]
+    KB["Knowledge Base & APIs\n(RAG, yfinance, alphavantage)"]
+    LLM["LLM Backend\n(Gemini/OpenAI)"]
+    Session["Session State\n(Streamlit)"]
+    Disclaimer["Source Citation & Disclaimers"]
+
+    UI --> Router
+    Router --> QA
+    Router --> Portfolio
+    Router --> Market
+    Router --> Goal
+    QA --> KB
+    Portfolio --> KB
+    Market --> KB
+    Goal --> KB
+    QA --> LLM
+    QA --> State
+    Portfolio --> State
+    Market --> State
+    Goal --> State
+    UI --> Session
+    QA --> Disclaimer
+    Portfolio --> Disclaimer
+    Market --> Disclaimer
+    Goal --> Disclaimer

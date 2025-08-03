@@ -1,7 +1,7 @@
 
 from typing import Any, Dict, List, Optional
-from src.core.state import FinanceAgentState
-from src.agents.llm_backend import LLMBackend
+from core.state import FinanceAgentState
+from agents.llm_backend import LLMBackend
 
 class SimpleRAGRetriever:
     """

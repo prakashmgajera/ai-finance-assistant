@@ -26,8 +26,8 @@ llm_api_key = st.sidebar.text_input("LLM API Key", type="password")
 st.session_state["llm_type"] = llm_type
 st.session_state["llm_api_key"] = llm_api_key
 
-from src.agents.concept_explainer import FinanceQAAgent, SimpleRAGRetriever
-from src.agents.llm_backend import LLMBackend
+from agents.concept_explainer import FinanceQAAgent, SimpleRAGRetriever
+from agents.llm_backend import LLMBackend
 
 # Setup FinanceQAAgent with user-provided model and key
 llm_backend = LLMBackend(provider=llm_type, api_key=llm_api_key)
