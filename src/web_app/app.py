@@ -1,3 +1,7 @@
+
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import streamlit as st
 
 st.set_page_config(page_title="AI Finance Assistant", layout="wide")
@@ -39,8 +43,13 @@ if tab == "Chat":
     st.title("💬 Finance Q&A Chat")
     user_query = st.text_input("Ask a finance or investment question:")
     if st.button("Send") and user_query:
-        # Placeholder for agent response
-        response = "This is where the Finance Q&A agent's answer will appear."
+        # Prepare state and get real response from FinanceQAAgent
+        state = {
+            "user_query": user_query,
+            "conversational_history": st.session_state["conversational_history"]
+        }
+        result_state = finance_qa_agent.process_query(state)
+        response = result_state["agent_response"]
         st.session_state["conversational_history"].append({"user": user_query, "agent": response})
     for entry in st.session_state["conversational_history"]:
         st.markdown(f"**You:** {entry['user']}")
