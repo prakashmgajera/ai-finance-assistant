@@ -1,4 +1,3 @@
-
 import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -22,20 +21,34 @@ st.sidebar.title("Navigation")
 tab = st.sidebar.radio("Go to", ["Chat", "Portfolio", "Market", "Goals"])
 
 st.sidebar.markdown("---")
+
+# LLM config
 st.sidebar.subheader("LLM Configuration")
 llm_type = st.sidebar.selectbox("Type of LLM", ["gemini", "openai"], index=0)
 llm_api_key = st.sidebar.text_input("LLM API Key", type="password")
 
+# Vectorize config
+st.sidebar.subheader("Vectorize RAG Configuration")
+vectorize_token = st.sidebar.text_input("Vectorize API Token", type="password")
+if not vectorize_token:
+    st.sidebar.warning("Vectorize API token required for RAG retrieval. Please enter your token.")
+st.session_state["vectorize_token"] = vectorize_token
+
 # Store LLM config in session state
 st.session_state["llm_type"] = llm_type
 st.session_state["llm_api_key"] = llm_api_key
+
+# For production, mask API key and warn if missing
+if not llm_api_key:
+    st.sidebar.warning("API key required for LLM access. Please enter your key.")
+
 
 from agents.concept_explainer import FinanceQAAgent, SimpleRAGRetriever
 from agents.llm_backend import LLMBackend
 
 # Setup FinanceQAAgent with user-provided model and key
 llm_backend = LLMBackend(provider=llm_type, api_key=llm_api_key)
-rag_retriever = SimpleRAGRetriever()
+rag_retriever = SimpleRAGRetriever(token=st.session_state.get("vectorize_token", ""))
 finance_qa_agent = FinanceQAAgent(llm_backend, rag_retriever)
 
 # Main UI Tabs
@@ -52,8 +65,22 @@ if tab == "Chat":
         response = result_state["agent_response"]
         st.session_state["conversational_history"].append({"user": user_query, "agent": response})
     for entry in st.session_state["conversational_history"]:
-        st.markdown(f"**You:** {entry['user']}")
-        st.markdown(f"**Assistant:** {entry['agent']}")
+        # Support both app and agent history formats
+        if "user" in entry and "agent" in entry:
+            st.markdown(f"**You:** {entry['user']}")
+            st.markdown(f"**Assistant:** {entry['agent']}")
+        elif "query" in entry and "response" in entry:
+            st.markdown(f"**You:** {entry['query']}")
+            # Show error if response contains error
+            if entry["response"].startswith("Error:"):
+                st.error(entry["response"])
+            else:
+                st.markdown(f"**Assistant:** {entry['response']}")
+            # Optionally show sources if present
+            if "sources" in entry and entry["sources"]:
+                st.markdown("**Sources:**")
+                for src in entry["sources"]:
+                    st.markdown(f"- [{src}]({src})")
 
 elif tab == "Portfolio":
     st.title("📊 Portfolio Analyzer")

@@ -7,16 +7,34 @@ class SimpleRAGRetriever:
     """
     Simple retriever that returns relevant URLs for finance concepts.
     """
-    SOURCES = [
-        "https://www.investopedia.com/",
-        "https://www.bankrate.com/investing/",
-        "https://www.nerdwallet.com/h/category/personal-finance",
-        "https://smartasset.com/investing",
-        "https://zerodha.com/varsity/"
-    ]
+    def __init__(self, token: str):
+        import vectorize_client as v
+        # You must set these IDs for your pipeline and data
+        self.PIPELINE_ID = "dacc2def-253e-4fa3-b8fd-6e9e6825b9cd"
+        self.DATA_ID = "aip000ea-3afc-45bc-a204-f306d6188a2b"
+        self.api = v.ApiClient(v.Configuration(access_token=token, host="https://api.vectorize.io/v1"))
+        self.pipelines = v.PipelinesApi(self.api)
+
     def retrieve(self, query: str) -> List[Dict[str, Any]]:
-        # In production, use embeddings/vector search. Here, return all sources.
-        return [{"content": f"See these sources for '{query}'.", "source_url": url} for url in self.SOURCES]
+        import vectorize_client as v
+        try:
+            response = self.pipelines.retrieve_documents(
+                self.PIPELINE_ID,
+                self.DATA_ID,
+                v.RetrieveDocumentsRequest(
+                    question=query,
+                    num_results=5,
+                )
+            )
+            # Each document should have 'text' and optionally 'source_url'
+            results = []
+            for doc in response.documents:
+                content = doc.get('text', '')
+                url = doc.get('source_url', '')
+                results.append({"content": content, "source_url": url})
+            return results
+        except Exception as e:
+            return [{"content": f"Error retrieving documents: {e}", "source_url": ""}]
 
 class FinanceQAAgent:
     """
