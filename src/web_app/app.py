@@ -50,9 +50,11 @@ if not llm_api_key:
 from agents.llamaindex_rag_retriever import LlamaIndexRAGRetriever
 from agents.llm_backend import LLMBackend
 
+
 # Setup FinanceQAAgent with user-provided model and key
 llm_backend = LLMBackend(provider=llm_type, api_key=llm_api_key)
-rag_retriever = LlamaIndexRAGRetriever()  # Uses persistent Qdrant vector store
+qdrant_url = "https://6f1a0c83-2778-4e95-af4e-6b6506891a53.us-west-2-0.aws.cloud.qdrant.io"
+rag_retriever = LlamaIndexRAGRetriever(qdrant_url=qdrant_url, qdrant_api_key=qdrant_api_key)
 from agents.vectorize_rag_retriever import FinanceQAAgent
 finance_qa_agent = FinanceQAAgent(llm_backend, rag_retriever)
 
