@@ -27,12 +27,20 @@ st.sidebar.subheader("LLM Configuration")
 llm_type = st.sidebar.selectbox("Type of LLM", ["gemini", "openai"], index=0)
 llm_api_key = st.sidebar.text_input("LLM API Key", type="password")
 
+
 # Vectorize config
 st.sidebar.subheader("Vectorize RAG Configuration")
 vectorize_token = st.sidebar.text_input("Vectorize API Token", type="password")
 if not vectorize_token:
     st.sidebar.warning("Vectorize API token required for RAG retrieval. Please enter your token.")
 st.session_state["vectorize_token"] = vectorize_token
+
+# Qdrant Cloud config
+st.sidebar.subheader("Qdrant Cloud Configuration")
+qdrant_api_key = st.sidebar.text_input("Qdrant API Key", type="password")
+st.session_state["qdrant_api_key"] = qdrant_api_key
+if qdrant_api_key:
+    os.environ["QDRANT_API_KEY"] = qdrant_api_key
 
 # Store LLM config in session state
 st.session_state["llm_type"] = llm_type

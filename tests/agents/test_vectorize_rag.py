@@ -60,6 +60,11 @@ def test_vectorize_rag_retriever_error(monkeypatch):
         "RetrieveDocumentsRequest": lambda **kwargs: kwargs
     })
     retriever = VectorizeRAGRetriever(token="dummy")
+    # Patch the retriever to simulate error path
+    retriever._memory_cache = {}  # Ensure cache is empty
     results = retriever.retrieve("What is investing?")
+    # Should return a single error result
+    assert isinstance(results, list)
     assert len(results) == 1
+    assert "Error" in results[0]["content"]
     assert results[0]["content"].startswith("Error retrieving documents:")
