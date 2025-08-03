@@ -27,7 +27,6 @@ st.sidebar.markdown("---")
 
 # LLM config (OpenAI is default, selection removed from UI)
 
-st.sidebar.subheader("LLM Configuration")
 llm_type = "openai"
 try:
     llm_api_key = st.secrets["OPENAI_API_KEY"]
@@ -40,7 +39,6 @@ except Exception:
 # Qdrant Cloud config
 
 
-st.sidebar.subheader("Qdrant Cloud Configuration")
 try:
     qdrant_api_key = st.secrets["QDRANT_API_KEY"]
 except Exception:
@@ -53,10 +51,6 @@ st.session_state["llm_type"] = llm_type
 st.session_state["llm_api_key"] = llm_api_key
 
 # For production, mask API key and warn if missing
-if not llm_api_key:
-    st.sidebar.warning("LLM API key required. Please set it in your system environment variables.")
-if not qdrant_api_key:
-    st.sidebar.warning("Qdrant API key required. Please set it in your system environment variables.")
 
 
 
@@ -73,39 +67,40 @@ if qdrant_api_key:
     rag_retriever = LlamaIndexRAGRetriever(qdrant_url=qdrant_url, qdrant_api_key=qdrant_api_key)
     from agents.vectorize_rag_retriever import FinanceQAAgent
     finance_qa_agent = FinanceQAAgent(llm_backend, rag_retriever)
-else:
-    st.sidebar.error("Please enter your Qdrant API key to enable retrieval.")
 
 # Main UI Tabs
 if tab == "Chat":
     st.title("💬 Finance Q&A Chat")
-    user_query = st.text_input("Ask a finance or investment question:")
-    if st.button("Send") and user_query:
-        # Prepare state and get real response from FinanceQAAgent
-        state = {
-            "user_query": user_query,
-            "conversational_history": st.session_state["conversational_history"]
-        }
-        result_state = finance_qa_agent.process_query(state)
-        response = result_state["agent_response"]
-        st.session_state["conversational_history"].append({"user": user_query, "agent": response})
-    for entry in st.session_state["conversational_history"]:
-        # Support both app and agent history formats
-        if "user" in entry and "agent" in entry:
-            st.markdown(f"**You:** {entry['user']}")
-            st.markdown(f"**Assistant:** {entry['agent']}")
-        elif "query" in entry and "response" in entry:
-            st.markdown(f"**You:** {entry['query']}")
-            # Show error if response contains error
-            if entry["response"].startswith("Error:"):
-                st.error(entry["response"])
-            else:
-                st.markdown(f"**Assistant:** {entry['response']}")
-            # Optionally show sources if present
-            if "sources" in entry and entry["sources"]:
-                st.markdown("**Sources:**")
-                for src in entry["sources"]:
-                    st.markdown(f"- [{src}]({src})")
+    if finance_qa_agent is None:
+        st.error("Finance Q&A agent is not available. Please check your configuration or contact the administrator.")
+    else:
+        user_query = st.text_input("Ask a finance or investment question:")
+        if st.button("Send") and user_query:
+            # Prepare state and get real response from FinanceQAAgent
+            state = {
+                "user_query": user_query,
+                "conversational_history": st.session_state["conversational_history"]
+            }
+            result_state = finance_qa_agent.process_query(state)
+            response = result_state["agent_response"]
+            st.session_state["conversational_history"].append({"user": user_query, "agent": response})
+        for entry in st.session_state["conversational_history"]:
+            # Support both app and agent history formats
+            if "user" in entry and "agent" in entry:
+                st.markdown(f"**You:** {entry['user']}")
+                st.markdown(f"**Assistant:** {entry['agent']}")
+            elif "query" in entry and "response" in entry:
+                st.markdown(f"**You:** {entry['query']}")
+                # Show error if response contains error
+                if entry["response"].startswith("Error:"):
+                    st.error(entry["response"])
+                else:
+                    st.markdown(f"**Assistant:** {entry['response']}")
+                # Optionally show sources if present
+                if "sources" in entry and entry["sources"]:
+                    st.markdown("**Sources:**")
+                    for src in entry["sources"]:
+                        st.markdown(f"- [{src}]({src})")
 
 elif tab == "Portfolio":
     st.title("📊 Portfolio Analyzer")
