@@ -26,17 +26,25 @@ st.sidebar.markdown("---")
 
 
 # LLM config (OpenAI is default, selection removed from UI)
+
 st.sidebar.subheader("LLM Configuration")
 llm_type = "openai"
-llm_api_key = os.getenv("OPENAI_API_KEY")
+try:
+    llm_api_key = st.secrets["OPENAI_API_KEY"]
+except Exception:
+    llm_api_key = os.getenv("OPENAI_API_KEY")
 
 
 
 
 # Qdrant Cloud config
 
+
 st.sidebar.subheader("Qdrant Cloud Configuration")
-qdrant_api_key = os.getenv("QDRANT_API_KEY")
+try:
+    qdrant_api_key = st.secrets["QDRANT_API_KEY"]
+except Exception:
+    qdrant_api_key = os.getenv("QDRANT_API_KEY")
 st.session_state["qdrant_api_key"] = qdrant_api_key
 
 # Store LLM config in session state
