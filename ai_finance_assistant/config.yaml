@@ -1,0 +1,21 @@
+# AI Finance Assistant Configuration
+llm_provider: openai  # Options: openai, google, claude
+vector_db: chromadb  # Options: chromadb, faiss, pinecone
+market_data_provider: alpha_vantage  # Options: alpha_vantage, yfinance
+web_interface: streamlit  # Options: streamlit, gradio, react
+api_keys:
+  openai: "YOUR_OPENAI_API_KEY"
+  google: "YOUR_GOOGLE_API_KEY"
+  alpha_vantage: "YOUR_ALPHA_VANTAGE_API_KEY"
+  pinecone: "YOUR_PINECONE_API_KEY"
+
+cache:
+  enabled: true
+  ttl_minutes: 10
+
+logging:
+  level: INFO
+  file: logs/app.log
+
+regulatory:
+  disclaimer: "This system provides educational information only and does not constitute financial advice."

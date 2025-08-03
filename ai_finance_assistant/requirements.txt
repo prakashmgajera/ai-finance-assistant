@@ -1,0 +1,26 @@
+# Core AI/ML
+langchain
+langgraph
+crewai
+openai
+chromadb
+faiss-cpu
+pinecone-client
+google-generativeai
+streamlit
+gradio
+requests
+pandas
+matplotlib
+plotly
+PyYAML
+alpha_vantage
+yfinance
+
+# Testing
+pytest
+pytest-cov
+
+# Optional: For MCP server
+fastapi
+uvicorn
