@@ -39,12 +39,13 @@ class VectorizeRAGRetriever:
             return results
         except Exception as e:
             return [{"content": f"Error retrieving documents: {e}", "source_url": ""}]
+from agents.llamaindex_rag_retriever import LlamaIndexRAGRetriever
 
 class FinanceQAAgent:
     """
     Answers finance and investment concept questions using LLM and RAG, cites sources.
     """
-    def __init__(self, llm_backend: LLMBackend, rag_retriever: VectorizeRAGRetriever):
+    def __init__(self, llm_backend: LLMBackend, rag_retriever: LlamaIndexRAGRetriever):
         self.llm_backend = llm_backend
         self.rag_retriever = rag_retriever
 
